@@ -24,7 +24,7 @@ $(document).ready(function() {
     var $input = $field.find('input');
   
     // get the value of the inputfield
-    var str = $input.val().replace(',','.');
+    var str = $input.val().replace(/,/g,'.');
   
     // try to evaluate this expression
     var result;
