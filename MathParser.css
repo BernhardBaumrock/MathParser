@@ -1,0 +1,6 @@
+.MathParser .info { background-color: #ffce64; padding: 4px; display: none; }
+.MathParserInvalid { border: 1px solid red !important; }
+
+/* position label */
+.MathParser .container { position: relative; }
+.MathParser .info { position: absolute; top: 0; left: 0; }
