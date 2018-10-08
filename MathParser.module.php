@@ -133,22 +133,23 @@ class MathParser extends WireData implements Module {
    * @return void
    */
   private function setupEnabledFields() {
+
     if($this->autoload) {
-      $disabled = $this->getFieldNames($this->excludeStr);
+      $disabled = $this->getFieldNames($this->excludeIDs);
       foreach($this->wire->fields as $field) {
-        if(in_array($field->name, $disabled)) continue;
+        if(in_array($field->id, $disabled)) continue;
         if(!in_array((string)$field->type, $this->allowed)) continue;
-        $this->enabledFields[] = $field->name;
+        $this->enabledFields[] = $field->id;
       }
     }
     else {
       // only add manually enabled fields
-      $this->enabledFields = $this->getFieldNames($this->includeStr);
+      $this->enabledFields = $this->getFieldNames($this->includeIDs);
     }
 
     // todo: check if all fields are set to "text", not "number"
     // this is necessary because otherwise the user cannot enter some digits, eg (*/)
-    
+
   }
 
   /**
@@ -157,19 +158,13 @@ class MathParser extends WireData implements Module {
    * @param String $str
    * @return Array
    */
-  private function getFieldNames($str) {
-    $arr = explode("\n", $str);
-    foreach($arr as &$fieldname) {
-      $newname = $this->wire->sanitizer->fieldName($fieldname);
-      if($fieldname != $newname) {
-        $this->warning("Field $fieldname was sanitized to $newname");
-      }
-      $fieldname = $newname;
-      if(!$fieldname) continue;
-      if(!$this->wire->fields($fieldname)) {
+  private function getFieldNames($arr) {
+    foreach($arr as $fieldID) {
+      if(!$this->wire->fields((int)$fieldID)) {
         $this->warning("Field $fieldname does not exist but is listed in the module settings");
       }
     }
+    // @todo/@kongondo comment: still need this?
     return array_filter($arr);
   }
 }
