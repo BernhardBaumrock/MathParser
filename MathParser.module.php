@@ -27,10 +27,15 @@ class MathParser extends WireData implements Module {
    */
   private $enabledFields = [];
 
+  /**
+   * flag to load assets only once
+   */
+  private $assetsLoaded = false;
+
   public static function getModuleInfo() {
     return [
       'title' => 'Math Parser',
-      'version' => '0.0.4',
+      'version' => '0.0.5',
       'summary' => 'Adds an option to parse math expressions in Inputfields',
       'singular' => true,
       'autoload' => true,
@@ -59,6 +64,7 @@ class MathParser extends WireData implements Module {
    * @return void
    */
   public function loadAssets(HookEvent $event) {
+    if($this->assetsLoaded) return;
     $inputfield = $event->object;
     if(!$this->isEnabled($inputfield)) return;
 
@@ -79,6 +85,8 @@ class MathParser extends WireData implements Module {
     $this->wire->config->styles->add(
       $this->wire->config->urls($this).$this->className.'.css'
     );
+
+    $this->assetsLoaded = true;
   }
 
   /**
