@@ -122,7 +122,7 @@ class MathParser extends WireData implements Module {
     if(!in_array((string)$inputfield->hasFieldtype, $this->allowed)) return;
 
     // check if the field is enabled in the MathParser module settings
-    if(!in_array($inputfield->hasField->name, $this->enabledFields)) return;
+    if(!in_array($inputfield->hasField->id, $this->enabledFields)) return;
 
     return true;
   }
@@ -135,7 +135,7 @@ class MathParser extends WireData implements Module {
   private function setupEnabledFields() {
 
     if($this->autoload) {
-      $disabled = $this->getFieldNames($this->excludeIDs);
+      $disabled = $this->getFieldIDs($this->excludeIDs);
       foreach($this->wire->fields as $field) {
         if(in_array($field->id, $disabled)) continue;
         if(!in_array((string)$field->type, $this->allowed)) continue;
@@ -144,12 +144,25 @@ class MathParser extends WireData implements Module {
     }
     else {
       // only add manually enabled fields
-      $this->enabledFields = $this->getFieldNames($this->includeIDs);
+      $this->enabledFields = $this->getFieldIDs($this->includeIDs);
     }
 
-    // todo: check if all fields are set to "text", not "number"
+    // check if all fields are set to "text", not "number"
     // this is necessary because otherwise the user cannot enter some digits, eg (*/)
+    foreach($this->enabledFields as $fieldID) $this->checkTypeText($fieldID);
+  }
 
+  /**
+   * check if the type of the field is text and not number
+   *
+   * @param Integer $fieldID
+   * @return void
+   */
+  private function checkTypeText($fieldID) {
+    $field = $this->wire->fields->get($fieldID);
+    if($field->getInputfield(new NullPage())->inputType != 'text') {
+      $this->warning("Field {$field->name} inputtype must be set to 'text' for MathParser to work");
+    }
   }
 
   /**
@@ -158,13 +171,12 @@ class MathParser extends WireData implements Module {
    * @param String $str
    * @return Array
    */
-  private function getFieldNames($arr) {
+  private function getFieldIDs($arr) {
     foreach($arr as $fieldID) {
       if(!$this->wire->fields((int)$fieldID)) {
         $this->warning("Field $fieldname does not exist but is listed in the module settings");
       }
     }
-    // @todo/@kongondo comment: still need this?
-    return array_filter($arr);
+    return $arr;
   }
 }
