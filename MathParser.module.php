@@ -30,7 +30,7 @@ class MathParser extends WireData implements Module {
   public static function getModuleInfo() {
     return [
       'title' => 'Math Parser',
-      'version' => '0.0.3',
+      'version' => '0.0.4',
       'summary' => 'Adds an option to parse math expressions in Inputfields',
       'singular' => true,
       'autoload' => true,
@@ -48,9 +48,6 @@ class MathParser extends WireData implements Module {
     $this->wire->addHookAfter('Inputfield::renderReadyHook', $this, 'loadAssets');
     $this->wire->addHookBefore('Inputfield::render', $this, 'addInputfieldClass');
     $this->wire->addHookAfter('Inputfield::render', $this, 'modifyInputfieldMarkup');
-
-    // send translatable strings to javascript
-    $this->wire->config->js('invalidMathParserExpr', __('Invalid Expression'));
   }
 
   // ########## hooks ##########
@@ -63,7 +60,10 @@ class MathParser extends WireData implements Module {
    */
   public function loadAssets(HookEvent $event) {
     $inputfield = $event->object;
+    if(!$this->isEnabled($inputfield)) return;
 
+    // send translatable strings to javascript
+    $this->wire->config->js('invalidMathParserExpr', __('Invalid Expression'));
 
     // add the library
     $this->wire->config->scripts->add(
@@ -118,13 +118,9 @@ class MathParser extends WireData implements Module {
    * @return boolean
    */
   private function isEnabled($inputfield) {
-    // check if the field is in the allowed fieldtypes
-    if(!in_array((string)$inputfield->hasFieldtype, $this->allowed)) return;
-
-    // check if the field is enabled in the MathParser module settings
-    if(!in_array($inputfield->hasField->id, $this->enabledFields)) return;
-
-    return true;
+    if(!$inputfield->hasField) return false;
+    if(in_array($inputfield->hasField->id, $this->enabledFields)) return true;
+    return false;
   }
 
   /**
