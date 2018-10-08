@@ -35,6 +35,7 @@ class MathParserConfig extends ModuleConfig {
       'label' => __('Names of fields where NOT to use MathParser'),
       'options' => $this->getGetAllowedFields(),
       'description' => __('Select as required'),
+      'showIf' => 'autoload=1',
     ]);
 
     return $inputfields;

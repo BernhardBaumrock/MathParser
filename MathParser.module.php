@@ -30,7 +30,7 @@ class MathParser extends WireData implements Module {
   public static function getModuleInfo() {
     return [
       'title' => 'Math Parser',
-      'version' => '0.0.2',
+      'version' => '0.0.3',
       'summary' => 'Adds an option to parse math expressions in Inputfields',
       'singular' => true,
       'autoload' => true,
