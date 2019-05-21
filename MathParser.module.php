@@ -128,7 +128,7 @@ class MathParser extends WireData implements Module {
    */
   private function isEnabled($inputfield) {
     // runtime fields can be enabled by adding the MathParser class
-    if($inputfield->mathParserEnabled) return true;
+    if($inputfield->mathParser) return true;
 
     // other fields are enabled/disabled via the module config
     if(!$inputfield->hasField) return false;
