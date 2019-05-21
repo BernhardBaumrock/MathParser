@@ -8,6 +8,18 @@
  * @link https://www.baumrock.com
  */
 class MathParser extends WireData implements Module {
+  public static function getModuleInfo() {
+    return [
+      'title' => 'Math Parser',
+      'version' => '0.0.6',
+      'summary' => 'Adds an option to parse math expressions in Inputfields',
+      'singular' => true,
+      'autoload' => true,
+      'icon' => 'superscript',
+      'requires' => [],
+      'installs' => [],
+    ];
+  }
 
   /**
    * array of all allowed fieldtypes
@@ -32,19 +44,6 @@ class MathParser extends WireData implements Module {
    */
   private $assetsLoaded = false;
 
-  public static function getModuleInfo() {
-    return [
-      'title' => 'Math Parser',
-      'version' => '0.0.5',
-      'summary' => 'Adds an option to parse math expressions in Inputfields',
-      'singular' => true,
-      'autoload' => true,
-      'icon' => 'superscript',
-      'requires' => [],
-      'installs' => [],
-    ];
-  }
-
   public function init() {
     // populate the enabled fields array
     $this->setupEnabledFields();
@@ -66,6 +65,8 @@ class MathParser extends WireData implements Module {
   public function loadAssets(HookEvent $event) {
     if($this->assetsLoaded) return;
     $inputfield = $event->object;
+
+    // early exit if this field is not enabled
     if(!$this->isEnabled($inputfield)) return;
 
     // send translatable strings to javascript
@@ -126,6 +127,10 @@ class MathParser extends WireData implements Module {
    * @return boolean
    */
   private function isEnabled($inputfield) {
+    // runtime fields can be enabled by adding the MathParser class
+    if($inputfield->mathParserEnabled) return true;
+
+    // other fields are enabled/disabled via the module config
     if(!$inputfield->hasField) return false;
     if(in_array($inputfield->hasField->id, $this->enabledFields)) return true;
     return false;
