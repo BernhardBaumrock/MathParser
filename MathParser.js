@@ -30,7 +30,7 @@ $(document).ready(function() {
     var result;
     var valid = true;
     try {
-      result = parseFloat(math.eval(str));
+      result = math.format(math.eval(str), {precision: 14});
       $input.removeClass('MathParserInvalid');
       if(result && !$.isNumeric(result)) throw error;
     } catch (error) {
