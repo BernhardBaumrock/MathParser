@@ -17,14 +17,28 @@ $(document).ready(function() {
     };
   };
 
+  var $info;
+  var $input;
+  var showInfo = function(result) {
+    $info
+      .text(result)
+      .css('margin-top', "-"+$info.outerHeight()+"px")
+      .fadeIn();
+  }
+  var hideInfo = function(result) {
+    if(result) $input.val(result);
+    $info.fadeOut();
+  }
+
   // parse math expression callback
   var parseMathExpression = function(e) {
     var $field = $(e.target).closest('.MathParser');
-    var $info = $field.find('.info');
-    var $input = $field.find('input');
+    $info = $field.find('.info');
+    $input = $field.find('input');
   
     // get the value of the inputfield
     var str = $input.val().replace(/,/g,'.');
+    if(!str) return hideInfo();
   
     // try to evaluate this expression
     var result;
@@ -40,23 +54,14 @@ $(document).ready(function() {
     }
   
     if(e.type == 'change') {
-      if(result && valid) {
-        $input.val(result);
-        $info.fadeOut();
-      }
+      if(result && valid) hideInfo(result);
     }
     else if(e.type == 'focusout') {
-      if(valid) $info.fadeOut();
+      if(valid) hideInfo();
     }
     else {
-      if(!result) $info.fadeOut();
-      else {
-        // write the result to the info span
-        $info
-          .text(result)
-          .css('margin-top', "-"+$info.outerHeight()+"px")
-          .fadeIn();
-      }
+      if(!result) hideInfo();
+      else showInfo(result);
     }
   };
 
